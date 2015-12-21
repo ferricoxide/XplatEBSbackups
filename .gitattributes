@@ -1,0 +1,6 @@
+* text=auto
+
+*.sh
+
+Windows*/*  eol=crlf
+Linux/** text eol=lf
