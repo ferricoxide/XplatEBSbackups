@@ -1,0 +1,6 @@
+[submodule "Linux"]
+	path = Linux
+	url = git@github.com:plus3it/LxEBSbackups.git
+[submodule "Windows"]
+	path = Windows
+	url = git@github.com:plus3it/WinEBSbackups.git
