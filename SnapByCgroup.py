@@ -3,8 +3,9 @@
 #################################################################
 
 import argparse
-import requests
 import boto.ec2
+import requests
+import sys
 
 
 ######################################################################
@@ -49,9 +50,12 @@ def targ_vols(i, l):
 def thread_snap(volobj):
    VolObjList = volobj
 
+   vol_list = []
+
    for vol in VolObjList:
-      print vol.id
-   return
+      vol_list.append(vol.id)
+
+   return vol_list
 
 #                                                                    #
 ######################################################################
@@ -68,7 +72,11 @@ print "Getting volumes for instance '%s' in region '%s'." % (instance, region)
 
 awsconn = boto.ec2.connect_to_region(region)
 
-thread_snap(targ_vols(instance, cgroup))
+if not thread_snap(targ_vols(instance, cgroup)):
+   print "No EBS volumes found with named 'Consistency Group' tag"
+   sys.exit(1)
+else:
+   print thread_snap(targ_vols(instance, cgroup))
 
 #print vollist
 
