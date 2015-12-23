@@ -4,6 +4,7 @@
 
 import argparse
 import boto.ec2
+import multiprocessing as mp
 import requests
 import sys
 
@@ -57,6 +58,16 @@ def thread_snap(volobj):
 
    return vol_list
 
+def snap_vols(list):
+   ebs_vols = list
+
+   # queue to dump snap-create outputs into
+   snap_ids = mp.Queue()
+
+   print ebs_vols
+
+   return
+
 #                                                                    #
 ######################################################################
 
@@ -76,8 +87,4 @@ if not thread_snap(targ_vols(instance, cgroup)):
    print "No EBS volumes found with named 'Consistency Group' tag"
    sys.exit(1)
 else:
-   print thread_snap(targ_vols(instance, cgroup))
-
-#print vollist
-
-
+   snap_vols(thread_snap(targ_vols(instance, cgroup)))
