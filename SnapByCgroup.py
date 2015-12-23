@@ -4,7 +4,7 @@
 
 import argparse
 import boto.ec2
-import multiprocessing as mp
+from multiprocessing import Pool
 import requests
 import sys
 
@@ -58,15 +58,12 @@ def thread_snap(volobj):
 
    return vol_list
 
-def snap_vols(list):
-   ebs_vols = list
+def snap_vols(ebs):
+   ebs_vol = ebs
 
-   # queue to dump snap-create outputs into
-   snap_ids = mp.Queue()
+   print ebs_vol
 
-   print ebs_vols
-
-   return
+   return 'snap-' + ebs_vol
 
 #                                                                    #
 ######################################################################
@@ -81,10 +78,23 @@ instance = instmeta['instance']
 
 print "Getting volumes for instance '%s' in region '%s'." % (instance, region)
 
+# Establish connection to AWS
 awsconn = boto.ec2.connect_to_region(region)
 
-if not thread_snap(targ_vols(instance, cgroup)):
+# Find volumes in 'Consistency Group'
+group_vols = thread_snap(targ_vols(instance, cgroup))
+
+# Initialize snapshot list
+snap_ids = []
+
+# Request snapshots of any found volumes
+if group_vols:
+   if __name__ == '__main__':
+      p = Pool(5)
+      snap_ids.append(p.map(snap_vols, group_vols))
+# Exit if no volumes found with tag
+else:
    print "No EBS volumes found with named 'Consistency Group' tag"
    sys.exit(1)
-else:
-   snap_vols(thread_snap(targ_vols(instance, cgroup)))
+
+print snap_ids
