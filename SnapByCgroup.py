@@ -65,6 +65,19 @@ def snap_vols(ebs):
 
    return snap_id.id
 
+# Tag successfully-created snapshots
+def snap_tag(list):
+   snap_list = list[0]	# This is stupidly-ugly, but works
+   tags = {}
+   tags['Name'] = 'AutoBack (' + instance + ') ' + timestamp
+   tags['Snapshot Group'] = timestamp + ' (' + instance + ') ' + cgroup
+   tags['Created by'] = 'Automated Backup'
+   
+   for snapshot in snap_list:
+      print 'Adding tags to snapshot "' + snapshot + '"."'
+      awsconn.create_tags(snapshot, tags)
+   return
+
 #                                                                    #
 ######################################################################
 
@@ -99,3 +112,4 @@ else:
    sys.exit(1)
 
 print snap_ids
+snap_tag(snap_ids)
