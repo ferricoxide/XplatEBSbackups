@@ -43,6 +43,8 @@ def instance_meta():
    instance = (requests.get(url).json()[u'instanceId'])
    return { 'region' : region, 'instance' : instance }
 
+
+# Get list of volumes for instance matching tag
 def targ_vols(i, l):
    my_instance = i
    my_label = l
@@ -51,18 +53,10 @@ def targ_vols(i, l):
 
    return my_vols
 
-def thread_snap(volobj):
-   VolObjList = volobj
 
-   vol_list = []
-
-   for vol in VolObjList:
-      vol_list.append(vol.id)
-
-   return vol_list
-
+# Snapshot the passed volume-object
 def snap_vols(ebs):
-   ebs_vol = ebs
+   ebs_vol = ebs.id
 
    snap_desc = instance + "-bkup-" + timestamp
 
@@ -84,13 +78,12 @@ instmeta = instance_meta()
 region   = instmeta['region']
 instance = instmeta['instance']
 
-print "Getting volumes for instance '%s' in region '%s'." % (instance, region)
-
 # Establish connection to AWS
 awsconn = boto.ec2.connect_to_region(region)
 
 # Find volumes in 'Consistency Group'
-group_vols = thread_snap(targ_vols(instance, cgroup))
+group_vols = targ_vols(instance, cgroup)
+print group_vols
 
 # Initialize snapshot list
 snap_ids = []
