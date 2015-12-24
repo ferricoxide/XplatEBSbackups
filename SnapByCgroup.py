@@ -7,6 +7,7 @@ import boto.ec2
 from multiprocessing import Pool
 import requests
 import sys
+import time
 
 
 ######################################################################
@@ -19,7 +20,9 @@ parser = argparse.ArgumentParser(
 parser.add_argument("-f", "--freeze", metavar="/MOUNT/POINT", 
                     help="Filesystem to freeze (Linux-only)",
                     action='append')
-parser.add_argument("-v", "--verbose", help="Enable verbose run-mode (not implemented)", action="store_true")
+parser.add_argument("-v", "--verbose",
+                    help="Enable verbose run-mode (not implemented)",
+                    action="store_true")
 parser.add_argument("cgroup", help="Name of the EBS consistency group")
 toolargs = parser.parse_args()
 
@@ -61,9 +64,12 @@ def thread_snap(volobj):
 def snap_vols(ebs):
    ebs_vol = ebs
 
-   print ebs_vol
+   snap_desc = instance + "-bkup-" + timestamp
 
-   return 'snap-' + ebs_vol
+   snap_id = awsconn.create_snapshot(ebs_vol, description=snap_desc)
+   print snap_id.id
+
+   return snap_id.id
 
 #                                                                    #
 ######################################################################
@@ -72,6 +78,8 @@ def snap_vols(ebs):
 ######################################################################
 ## Main program flow                                                ##
 ######################################################################
+timestamp = time.strftime("%Y%m%d%H%M")
+
 instmeta = instance_meta()
 region   = instmeta['region']
 instance = instmeta['instance']
