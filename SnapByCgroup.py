@@ -57,6 +57,7 @@ def targ_vols(i, l):
 # Snapshot the passed volume-object
 def snap_vols(ebs):
    ebs_vol = ebs.id
+   print 'Snapping volume: ' + ebs_vol
 
    snap_desc = instance + "-bkup-" + timestamp
 
@@ -103,9 +104,13 @@ snap_ids = []
 
 # Request snapshots of any found volumes
 if group_vols:
+   print group_vols
    if __name__ == '__main__':
+      print group_vols
+      time.sleep(0.1)
       p = Pool(5)
       snap_ids.append(p.map(snap_vols, group_vols))
+      print snap_ids
 # Exit if no volumes found with tag
 else:
    print "No EBS volumes found with named 'Consistency Group' tag"
@@ -113,3 +118,5 @@ else:
 
 print snap_ids
 snap_tag(snap_ids)
+
+awsconn.close()
