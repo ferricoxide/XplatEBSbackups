@@ -74,7 +74,7 @@ def snap_tag(list):
    tags['Created by'] = 'Automated Backup'
    
    for snapshot in snap_list:
-      print 'Adding tags to snapshot "' + snapshot + '"."'
+      print 'Adding tags to snapshot "' + snapshot + '".'
       awsconn.create_tags(snapshot, tags)
    return
 
